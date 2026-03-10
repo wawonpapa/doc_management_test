@@ -18,7 +18,14 @@
             loadSidebar: true,  // サイドバーを有効化
             subMaxLevel: 3,     // 目次の深さ
             auto2top: true,     // ページ切り替え時に最上部へ
-            search: 'auto',     // 検索機能
+            search: {
+                maxAge: 86400000, // キャッシュの有効期限（1日）
+                paths: 'auto',    // または後述のファイルリスト
+                placeholder: 'キーワードを入力...',
+                noData: '見つかりません',
+                depth: 6,         // 検索対象にする見出しの深さ
+                hideOtherSidebarContent: false, // 検索時に他のサイドバー内容を隠すか
+            },
             plugins: [
                 function (hook, vm) {
                     hook.doneEach(function () {
