@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>My Documentation</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple.css">
+</head>
+
+<body>
+    <div id="app">読み込み中...</div>
+    <script>
+        window.$docsify = {
+            name: 'ドキュメント管理',
+            repo: 'wawonpapa/doc_management_test',
+            loadSidebar: true,  // サイドバーを有効化
+            subMaxLevel: 3,     // 目次の深さ
+            auto2top: true,     // ページ切り替え時に最上部へ
+            search: 'auto',     // 検索機能
+            plugins: [
+                function (hook, vm) {
+                    hook.doneEach(function () {
+                        // 全ての .svg 画像を対象にする
+                        const images = document.querySelectorAll('img[src$=".svg"]');
+
+                        images.forEach(img => {
+                            const imgUrl = img.src;
+
+                            // SVGファイルをテキストとして読み込む
+                            fetch(imgUrl)
+                                .then(res => res.text())
+                                .then(data => {
+                                    // 1. テキストデータをDOM要素に変換
+                                    const parser = new DOMParser();
+                                    const svgDoc = parser.parseFromString(data, 'image/svg+xml');
+                                    const svgElement = svgDoc.querySelector('svg');
+
+                                    if (svgElement) {
+                                        // 2. SVG内の全てのリンクを調整する
+                                        const links = svgElement.querySelectorAll('a');
+                                        links.forEach(link => {
+                                            let href = link.getAttribute('xlink:href') || link.getAttribute('href');
+
+                                            // もし相対パスの .md リンクなら、Docsifyのハッシュ形式 (#/) に変換
+                                            if (href && href.endsWith('.md') && !href.startsWith('#')) {
+                                                // ここが重要！ Docsifyが認識できる形式に書き換える
+                                                link.setAttribute('xlink:href', '#/' + href);
+                                                link.setAttribute('href', '#/' + href);
+                                                // 親ウィンドウ（Docsify全体）を遷移させる
+                                                link.setAttribute('target', '_top');
+                                            }
+                                        });
+
+                                        // 3. 元の <img> を 実際の <svg> 要素に置き換える
+                                        // width: 100% をやめて、max-width に変更します
+                                        svgElement.style.maxWidth = '100%';
+                                        svgElement.style.height = 'auto';
+                                        // もともとの幅が設定されていればそれを維持、なければ自動
+                                        svgElement.style.width = 'auto';
+
+                                        img.parentNode.replaceChild(svgElement, img);
+                                    }
+                                });
+                        });
+                    });
+                }
+            ]
+        };
+
+    </script>
+    </script>
+    <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+    <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
+</body>
+
+</html>
