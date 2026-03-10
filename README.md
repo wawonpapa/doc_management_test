@@ -9,6 +9,7 @@ Markdown ファイルを中心としたドキュメント群を Git で管理し
 - VSCode + Git による Markdown ドキュメント管理の検証
 - Claude Code との連携による文書作成フローの検証
 - draw.io で作成した SVG 画像および画像内リンクの対応（ただしリンクの確認には docsify によるローカル環境などが必要）
+- Edit CSV 拡張機能による CSV 編集と grid.js を使ったブラウザ上での表表示
 
 ## ファイル構成
 
@@ -19,10 +20,12 @@ Markdown ファイルを中心としたドキュメント群を Git で管理し
 | [docs/フロー図1.md](docs/フロー図1.md) | draw.io で作成したフロー図のサンプル（リンク付きノードあり） |
 | [docs/フロー図2.md](docs/フロー図2.md) | draw.io で作成したフロー図のサンプル |
 | [docs/更新履歴.md](docs/更新履歴.md) | 日単位の変更履歴 |
-| [index.html](index.html) | docsify 設定ファイル（SVG リンク対応プラグイン含む） |
+| [docs/四字熟語.md](docs/四字熟語.md) | grid.js テーブル表示の検証ページ（CSV を表として表示） |
+| [index.html](index.html) | docsify 設定ファイル（SVG リンク対応・grid.js CSV テーブル対応プラグイン含む） |
 | [_sidebar.md](_sidebar.md) | docsify サイドバー定義 |
 | [images/](images/) | クリップボードから貼り付けた画像の格納フォルダ |
 | [dio_images/](dio_images/) | draw.io で作成した SVG ファイルの格納フォルダ |
+| [data/](data/) | CSV ファイルの格納フォルダ（Edit CSV で編集） |
 
 ## ドキュメント閲覧
 
