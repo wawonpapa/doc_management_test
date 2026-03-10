@@ -7,11 +7,35 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
     <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gridjs/dist/theme/mermaid.min.css">
 </head>
 
 <body>
     <div id="app">読み込み中...</div>
     <script>
+        // クォートに対応したシンプルな CSV パーサー
+        function parseCSV(text) {
+            var rows = [], row = [], field = '', inQuotes = false;
+            for (var i = 0; i < text.length; i++) {
+                var ch = text[i];
+                if (ch === '"') {
+                    if (inQuotes && text[i + 1] === '"') { field += '"'; i++; }
+                    else { inQuotes = !inQuotes; }
+                } else if (ch === ',' && !inQuotes) {
+                    row.push(field); field = '';
+                } else if ((ch === '\n' || ch === '\r') && !inQuotes) {
+                    if (ch === '\r' && text[i + 1] === '\n') i++;
+                    row.push(field); field = '';
+                    if (row.some(function (f) { return f !== ''; })) rows.push(row);
+                    row = [];
+                } else {
+                    field += ch;
+                }
+            }
+            if (field !== '' || row.length) { row.push(field); rows.push(row); }
+            return rows;
+        }
+
         window.$docsify = {
             name: 'ドキュメント管理',
             repo: 'wawonpapa/doc_management_test',
@@ -27,6 +51,42 @@
                 hideOtherSidebarContent: false, // 検索時に他のサイドバー内容を隠すか
             },
             plugins: [
+                // grid.js で CSV コードブロックをテーブルに変換するプラグイン
+                function (hook, vm) {
+                    hook.doneEach(function () {
+                        document.querySelectorAll('pre code.lang-gridjs, pre code.language-gridjs').forEach(function (block) {
+                            var csvText = block.textContent.trim();
+                            var rows = parseCSV(csvText);
+                            if (rows.length < 2) return;
+
+                            var headers = rows[0];
+                            var data = rows.slice(1);
+
+                            var container = document.createElement('div');
+                            block.closest('pre').replaceWith(container);
+
+                            new gridjs.Grid({
+                                columns: headers,
+                                data: data,
+                                search: true,
+                                sort: true,
+                                pagination: { limit: 20 },
+                                language: {
+                                    search: { placeholder: 'キーワードで絞り込む...' },
+                                    pagination: {
+                                        previous: '前へ',
+                                        next: '次へ',
+                                        showing: '',
+                                        results: () => '件',
+                                    },
+                                    noRecordsFound: 'データが見つかりません',
+                                    loading: '読み込み中...',
+                                }
+                            }).render(container);
+                        });
+                    });
+                },
+                // SVG 内リンクを Docsify 形式に変換するプラグイン
                 function (hook, vm) {
                     hook.doneEach(function () {
                         // 全ての .svg 画像を対象にする
@@ -77,7 +137,7 @@
         };
 
     </script>
-    </script>
+    <script src="//cdn.jsdelivr.net/npm/gridjs/dist/gridjs.umd.js"></script>
     <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
     <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
 </body>
