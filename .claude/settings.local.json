@@ -8,7 +8,13 @@
       "WebFetch(domain:pypi.org)",
       "WebFetch(domain:docusaurus.community)",
       "WebFetch(domain:docusaurus.io)",
-      "WebFetch(domain:blog.bytesofpurpose.com)"
+      "WebFetch(domain:blog.bytesofpurpose.com)",
+      "Bash(curl -s \"https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple.css\")",
+      "Bash(curl -s https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple.css)",
+      "Bash(perl -ne 'print if /--sidebar-nav.*l[12].*:\\\\s*[^;}]*[^\\\\s;}]/')",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:jhildenbiddle.github.io)",
+      "WebFetch(domain:stackoverflow.com)"
     ]
   }
 }
