@@ -2,7 +2,13 @@
   "permissions": {
     "allow": [
       "WebFetch(domain:registry.npmjs.org)",
-      "WebFetch(domain:cdn.jsdelivr.net)"
+      "WebFetch(domain:cdn.jsdelivr.net)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:pypi.org)",
+      "WebFetch(domain:docusaurus.community)",
+      "WebFetch(domain:docusaurus.io)",
+      "WebFetch(domain:blog.bytesofpurpose.com)"
     ]
   }
 }
