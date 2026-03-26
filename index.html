@@ -55,6 +55,40 @@
         .svg-scroll-wrapper {
             overflow: auto;
         }
+        /* サイドバーリサイズハンドル */
+        .sidebar {
+            position: relative;
+        }
+        .sidebar-resize-handle {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 5px;
+            height: 100%;
+            cursor: col-resize;
+            z-index: 100;
+        }
+        .sidebar-resize-handle:hover,
+        .sidebar-resize-handle.dragging {
+            background: rgba(0, 0, 0, 0.15);
+        }
+        /* サイドバー横スクロール */
+        .sidebar {
+            overflow-x: auto !important;
+            overflow-y: auto !important;
+        }
+        .sidebar-nav,
+        .sidebar-nav ul,
+        .sidebar-nav li {
+            overflow: visible !important;
+            white-space: nowrap;
+        }
+        .sidebar-nav li > a,
+        .sidebar-nav li > span.folder-label {
+            overflow: visible !important;
+            text-overflow: clip !important;
+            white-space: nowrap;
+        }
     </style>
 </head>
 
@@ -172,6 +206,41 @@
                                 }
                                 e.stopPropagation();
                             });
+                        });
+                    });
+                },
+                // サイドバーリサイズプラグイン
+                function (hook) {
+                    hook.ready(function () {
+                        var sidebar = document.querySelector('.sidebar');
+                        if (!sidebar) return;
+
+                        var handle = document.createElement('div');
+                        handle.className = 'sidebar-resize-handle';
+                        sidebar.appendChild(handle);
+
+                        var isResizing = false;
+
+                        handle.addEventListener('mousedown', function (e) {
+                            isResizing = true;
+                            handle.classList.add('dragging');
+                            document.body.style.cursor = 'col-resize';
+                            document.body.style.userSelect = 'none';
+                            e.preventDefault();
+                        });
+
+                        document.addEventListener('mousemove', function (e) {
+                            if (!isResizing) return;
+                            var newWidth = Math.min(Math.max(e.clientX, 120), 600);
+                            document.documentElement.style.setProperty('--sidebar-width', newWidth + 'px');
+                        });
+
+                        document.addEventListener('mouseup', function () {
+                            if (!isResizing) return;
+                            isResizing = false;
+                            handle.classList.remove('dragging');
+                            document.body.style.cursor = '';
+                            document.body.style.userSelect = '';
                         });
                     });
                 },
