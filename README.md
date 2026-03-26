@@ -8,7 +8,7 @@ Markdown ファイルを中心としたドキュメント群を Git で管理し
 
 - VSCode + Git による Markdown ドキュメント管理の検証
 - Claude Code との連携による文書作成フローの検証
-- draw.io で作成した SVG 画像および画像内リンクの対応（ただしリンクの確認には docsify によるローカル環境などが必要）
+- draw.io で作成した SVG 画像および画像内リンクの対応（リンクの確認には docsify 経由が必要。Cloudflare 公開 URL またはローカル環境で確認可能）
 - Edit CSV 拡張機能による CSV 編集と grid.js を使ったブラウザ上での表表示
 
 ## ファイル構成
@@ -29,8 +29,15 @@ Markdown ファイルを中心としたドキュメント群を Git で管理し
 
 ## ドキュメント閲覧
 
-draw.io SVG 内のリンクを動作させるには、ローカルでブラウザ経由で確認する必要がある。
-VSCode のターミナルでリポジトリのルートに移動し、以下のコマンドを実行する。
+### 公開 URL（Cloudflare）
+
+GitHub 経由で Cloudflare に公開しており、以下の URL からブラウザで閲覧できる。
+
+https://doctest.wawonpapa.workers.dev/#/
+
+### ローカル環境での確認
+
+ローカルで確認する場合は、VSCode のターミナルでリポジトリのルートに移動し、以下のコマンドを実行する。
 
 ```bash
 python -m http.server 5000
