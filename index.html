@@ -44,6 +44,17 @@
             font-size: 0.97em;
             font-weight: 500;
         }
+        /* コンテンツエリア：最大幅撤廃・左寄せ */
+        :root {
+            --content-max-width: none;
+        }
+        .markdown-section {
+            max-width: none !important;
+        }
+        /* SVGスクロールラッパー */
+        .svg-scroll-wrapper {
+            overflow: auto;
+        }
     </style>
 </head>
 
@@ -199,21 +210,25 @@
                                         });
 
                                         // 3. 元の <img> をスクロール可能なコンテナ + <svg> に置き換える
-                                        // コンテナより狭い場合は引き伸ばし、広い場合はスクロール
-                                        const naturalWidth = parseInt(svgElement.getAttribute('width')) || null;
+                                        // SVGは自然サイズで表示（拡大なし）、右ペイン全体を表示領域とする
                                         svgElement.style.display = 'block';
-                                        svgElement.style.width = '100%';
-                                        svgElement.style.height = 'auto';
-                                        if (naturalWidth) {
-                                            svgElement.style.minWidth = naturalWidth + 'px';
-                                        }
 
                                         const wrapper = document.createElement('div');
-                                        wrapper.style.overflow = 'auto';
-                                        wrapper.style.width = '100%';
+                                        wrapper.className = 'svg-scroll-wrapper';
                                         wrapper.appendChild(svgElement);
-
                                         img.parentNode.replaceChild(wrapper, img);
+
+                                        // 右ペイン右端までラッパーを広げる（左余白はそのまま保持）
+                                        requestAnimationFrame(function () {
+                                            const pane = wrapper.closest('.content') || wrapper.closest('section');
+                                            if (!pane) return;
+                                            const paneRect = pane.getBoundingClientRect();
+                                            const wrapperRect = wrapper.getBoundingClientRect();
+                                            const rightExtension = paneRect.right - wrapperRect.right;
+                                            if (rightExtension > 0) {
+                                                wrapper.style.width = (wrapper.clientWidth + rightExtension) + 'px';
+                                            }
+                                        });
                                     }
                                 });
                         });
