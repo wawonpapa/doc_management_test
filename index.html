@@ -16,7 +16,8 @@
         }
         .sidebar-nav li.folder-item > .folder-label {
             display: block;
-            font-size: var(--sidebar-nav-link-font-size, 14px);
+            font-size: 1.05em;
+            font-weight: 600;
             color: var(--sidebar-nav-link-color, #364149);
             line-height: var(--sidebar-nav-link-line-height, inherit);
             padding: var(--sidebar-nav-link-padding, 4px 0);
@@ -33,9 +34,15 @@
             display: none;
             margin-top: 0;
             padding-top: 0;
+            padding-left: 1.2em;
         }
         .sidebar-nav li.folder-item.open > ul {
             display: block;
+        }
+        /* ネストフォルダのラベルは親より小さく */
+        .sidebar-nav li.folder-item li.folder-item > .folder-label {
+            font-size: 0.97em;
+            font-weight: 500;
         }
     </style>
 </head>
