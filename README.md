@@ -8,6 +8,7 @@ Markdown ファイルを中心としたドキュメント群を Git で管理し
 
 - VSCode + Git による Markdown ドキュメント管理の検証
 - Claude Code との連携による文書作成フローの検証
+- docsify を使ったブラウザ表示・サイトカスタマイズの検証（サイドバー折りたたみ・リサイズ・アイコン表示・外部 URL iframe 表示など）
 - draw.io で作成した SVG 画像および画像内リンクの対応（リンクの確認には docsify 経由が必要。Cloudflare 公開 URL またはローカル環境で確認可能）
 - Edit CSV 拡張機能による CSV 編集と grid.js を使ったブラウザ上での表表示
 
@@ -46,6 +47,33 @@ python -m http.server 5000
 ```
 
 起動後、ブラウザで `http://localhost:5000` を開く。
+
+## docsify について
+
+このリポジトリのブラウザ表示には **[docsify](https://docsify.js.org/)** を使用している。
+
+docsify は Markdown ファイルをビルドなしでブラウザ上に描画する静的サイトジェネレーターで、サーバ側での HTML 生成が不要。`index.html` 1 ファイルと Markdown ファイル群だけで動作する。
+
+| 項目 | 内容 |
+|------|------|
+| 読み込み方式 | CDN（`cdn.jsdelivr.net`）から JS・CSS を読み込み |
+| テーマ | `docsify-themeable` の `theme-simple` |
+| サイドバー定義 | `_sidebar.md` に Markdown リスト形式で記載 |
+| 設定 | `index.html` 内の `window.$docsify` オブジェクトで制御 |
+
+**このリポジトリでの主なカスタマイズ:**
+
+| 機能 | 概要 |
+|------|------|
+| サイドバー折りたたみ | カスタム JS プラグインでフォルダの開閉を実装 |
+| サイドバーリサイズ | ドラッグで幅を変更できるハンドルを追加 |
+| SVG インライン展開 | `<img>` を `<svg>` に置換し、図内リンクを有効化 |
+| grid.js CSV テーブル | コードブロック指定で CSV を表として描画 |
+| 外部 URL iframe 表示 | サイドバーの外部リンクを右ペイン内 iframe で表示 |
+| サイドバーアイコン | 📁/📂/📄/🌐 でフォルダ・ファイル・外部リンクを区別 |
+| 見出しのサイドバー非表示 | `subMaxLevel: 0` でファイル単位の粒度に制限 |
+
+詳細は [docs/環境構築メモ.md](docs/環境構築メモ.md) を参照。
 
 ## TODO
 
