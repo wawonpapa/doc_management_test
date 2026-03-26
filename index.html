@@ -14,6 +14,14 @@
             cursor: pointer;
             user-select: none;
         }
+        .sidebar-nav li.folder-item > .folder-label {
+            display: block;
+            font-size: var(--sidebar-nav-link-font-size, 14px);
+            color: var(--sidebar-nav-link-color, #364149);
+            line-height: var(--sidebar-nav-link-line-height, inherit);
+            padding: var(--sidebar-nav-link-padding, 4px 0);
+            margin: 0;
+        }
         .sidebar-nav li.folder-item > .folder-label::before {
             content: '▶ ';
             font-size: 0.75em;
@@ -23,6 +31,8 @@
         }
         .sidebar-nav li.folder-item > ul {
             display: none;
+            margin-top: 0;
+            padding-top: 0;
         }
         .sidebar-nav li.folder-item.open > ul {
             display: block;
@@ -114,17 +124,14 @@
                             if (!subList) return;
                             if (li.querySelector(':scope > a')) return; // リンク付きアイテムはスキップ
 
-                            // テキストを .folder-label に包む
+                            // テキストを .folder-label に包む（<p>タグや空白ノードをすべて除去）
                             var label = document.createElement('span');
                             label.className = 'folder-label';
-                            li.childNodes.forEach(function (node) {
-                                if (node.nodeType === Node.TEXT_NODE || node.nodeName === 'P') {
-                                    var text = node.textContent.trim();
-                                    if (text) label.textContent = text;
-                                }
-                            });
                             Array.from(li.childNodes).forEach(function (node) {
-                                if (node !== subList && node.nodeName !== 'UL') li.removeChild(node);
+                                if (node === subList) return;
+                                var text = node.textContent.trim();
+                                if (text) label.textContent = text;
+                                li.removeChild(node);
                             });
                             li.insertBefore(label, subList);
 
