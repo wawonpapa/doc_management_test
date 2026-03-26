@@ -125,6 +125,9 @@
                 },
                 // サイドバー折りたたみプラグイン
                 function (hook, vm) {
+                    // ページ遷移をまたいで開閉状態を保持する
+                    var openFolderNames = new Set();
+
                     hook.doneEach(function () {
                         document.querySelectorAll('.sidebar-nav li').forEach(function (li) {
                             var subList = li.querySelector(':scope > ul');
@@ -144,8 +147,18 @@
 
                             li.classList.add('folder-item');
 
+                            // 再描画後も開いていたフォルダを復元
+                            if (openFolderNames.has(label.textContent)) {
+                                li.classList.add('open');
+                            }
+
                             label.addEventListener('click', function (e) {
                                 li.classList.toggle('open');
+                                if (li.classList.contains('open')) {
+                                    openFolderNames.add(label.textContent);
+                                } else {
+                                    openFolderNames.delete(label.textContent);
+                                }
                                 e.stopPropagation();
                             });
                         });
