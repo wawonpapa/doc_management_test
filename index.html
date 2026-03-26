@@ -198,14 +198,15 @@
                                             }
                                         });
 
-                                        // 3. 元の <img> を 実際の <svg> 要素に置き換える
-                                        // width: 100% をやめて、max-width に変更します
-                                        svgElement.style.maxWidth = '100%';
-                                        svgElement.style.height = 'auto';
-                                        // もともとの幅が設定されていればそれを維持、なければ自動
-                                        svgElement.style.width = 'auto';
+                                        // 3. 元の <img> をスクロール可能なコンテナ + <svg> に置き換える
+                                        // SVG は自然サイズで表示し、はみ出す場合はスクロールバーを表示
+                                        svgElement.style.display = 'block';
 
-                                        img.parentNode.replaceChild(svgElement, img);
+                                        const wrapper = document.createElement('div');
+                                        wrapper.style.overflow = 'auto';
+                                        wrapper.appendChild(svgElement);
+
+                                        img.parentNode.replaceChild(wrapper, img);
                                     }
                                 });
                         });
