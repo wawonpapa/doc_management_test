@@ -10,18 +10,22 @@
     <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gridjs/dist/theme/mermaid.min.css">
     <style>
         /* サイドバー折りたたみ：親フォルダの開閉インジケーター */
-        .sidebar-nav li > p {
+        .sidebar-nav li.folder-item {
             cursor: pointer;
             user-select: none;
         }
-        .sidebar-nav li > p::before {
+        .sidebar-nav li.folder-item > .folder-label::before {
             content: '▶ ';
             font-size: 0.75em;
-            display: inline-block;
-            transition: transform 0.2s;
         }
-        .sidebar-nav li.open > p::before {
+        .sidebar-nav li.folder-item.open > .folder-label::before {
             content: '▼ ';
+        }
+        .sidebar-nav li.folder-item > ul {
+            display: none;
+        }
+        .sidebar-nav li.folder-item.open > ul {
+            display: block;
         }
     </style>
 </head>
@@ -102,6 +106,37 @@
                         });
                     });
                 },
+                // サイドバー折りたたみプラグイン
+                function (hook, vm) {
+                    hook.doneEach(function () {
+                        document.querySelectorAll('.sidebar-nav li').forEach(function (li) {
+                            var subList = li.querySelector(':scope > ul');
+                            if (!subList) return;
+                            if (li.querySelector(':scope > a')) return; // リンク付きアイテムはスキップ
+
+                            // テキストを .folder-label に包む
+                            var label = document.createElement('span');
+                            label.className = 'folder-label';
+                            li.childNodes.forEach(function (node) {
+                                if (node.nodeType === Node.TEXT_NODE || node.nodeName === 'P') {
+                                    var text = node.textContent.trim();
+                                    if (text) label.textContent = text;
+                                }
+                            });
+                            Array.from(li.childNodes).forEach(function (node) {
+                                if (node !== subList && node.nodeName !== 'UL') li.removeChild(node);
+                            });
+                            li.insertBefore(label, subList);
+
+                            li.classList.add('folder-item');
+
+                            label.addEventListener('click', function (e) {
+                                li.classList.toggle('open');
+                                e.stopPropagation();
+                            });
+                        });
+                    });
+                },
                 // SVG 内リンクを Docsify 形式に変換するプラグイン
                 function (hook, vm) {
                     hook.doneEach(function () {
@@ -156,7 +191,6 @@
     <script src="//cdn.jsdelivr.net/npm/gridjs/dist/gridjs.umd.js"></script>
     <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
     <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
-    <script src="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/docsify-sidebar-collapse.min.js"></script>
 </body>
 
 </html>
