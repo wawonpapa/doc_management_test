@@ -17,18 +17,21 @@
         .sidebar-nav li.folder-item > .folder-label {
             display: block;
             font-size: 1.05em;
-            font-weight: 600;
+            font-weight: normal;
             color: var(--sidebar-nav-link-color, #364149);
-            line-height: var(--sidebar-nav-link-line-height, inherit);
-            padding: var(--sidebar-nav-link-padding, 4px 0);
-            margin: 0;
+            padding: var(--sidebar-nav-pagelink-padding, 0.25em 0 0.25em 20px);
+            margin: var(--sidebar-nav-link-margin, 0 -25px 0 0);
+            background: var(--sidebar-nav-pagelink-background);
+            transition: var(--sidebar-nav-pagelink-transition);
+        }
+        .sidebar-nav li.folder-item.open > .folder-label {
+            background: var(--sidebar-nav-pagelink-background--loaded);
         }
         .sidebar-nav li.folder-item > .folder-label::before {
-            content: '▶ ';
-            font-size: 0.75em;
+            content: '📁 ';
         }
         .sidebar-nav li.folder-item.open > .folder-label::before {
-            content: '▼ ';
+            content: '📂 ';
         }
         .sidebar-nav li.folder-item > ul {
             display: none;
@@ -39,12 +42,7 @@
         .sidebar-nav li.folder-item.open > ul {
             display: block;
         }
-        /* ネストフォルダのラベルは親より小さく */
-        .sidebar-nav li.folder-item li.folder-item > .folder-label {
-            font-size: 0.97em;
-            font-weight: 500;
-        }
-        /* コンテンツエリア：最大幅撤廃・左寄せ */
+/* コンテンツエリア：最大幅撤廃・左寄せ */
         :root {
             --content-max-width: none;
         }
@@ -54,6 +52,13 @@
         /* SVGスクロールラッパー */
         .svg-scroll-wrapper {
             overflow: auto;
+        }
+        /* 外部ページ iframe */
+        .external-iframe {
+            display: block;
+            width: 100%;
+            height: calc(100vh - 120px);
+            border: none;
         }
         /* サイドバーリサイズハンドル */
         .sidebar {
@@ -89,6 +94,21 @@
             text-overflow: clip !important;
             white-space: nowrap;
         }
+        /* 内部リンクにファイルアイコン（アクティブ時も維持） */
+        .sidebar-nav li > a:not([href^="http"])::before,
+        .sidebar-nav li.active > a:not([href^="http"])::before {
+            content: '📄 ';
+        }
+        /* 外部リンクにも内部リンクと同じシェブロン背景を適用、アイコンも追加 */
+        .sidebar-nav li > a[href^="http"] {
+            background: var(--sidebar-nav-pagelink-background);
+            padding: var(--sidebar-nav-pagelink-padding);
+            transition: var(--sidebar-nav-pagelink-transition);
+        }
+        .sidebar-nav li > a[href^="http"]::before {
+            content: '🌐 ';
+        }
+
     </style>
 </head>
 
@@ -207,6 +227,47 @@
                                 e.stopPropagation();
                             });
                         });
+
+                    });
+                },
+                // 外部リンクを右ペインにiframe表示するプラグイン
+                function (hook, vm) {
+                    hook.doneEach(function () {
+                        document.querySelectorAll('.sidebar-nav a').forEach(function (a) {
+                            var href = a.getAttribute('href');
+                            if (!href || (!href.startsWith('http://') && !href.startsWith('https://'))) return;
+                            // 既にリスナー登録済みならスキップ
+                            if (a.dataset.iframeHandled) return;
+                            a.dataset.iframeHandled = '1';
+                            a.addEventListener('click', function (e) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                // ハッシュを外部URLに設定してiframeを表示
+                                var section = document.querySelector('.content') || document.querySelector('section');
+                                if (!section) return;
+                                var existing = section.querySelector('.external-iframe');
+                                if (existing) existing.remove();
+                                var iframe = document.createElement('iframe');
+                                iframe.className = 'external-iframe';
+                                iframe.src = href;
+                                iframe.allow = 'fullscreen';
+                                // マークダウンセクションを隠してiframeに置き換える
+                                var mdSection = section.querySelector('.markdown-section');
+                                if (mdSection) {
+                                    mdSection.style.display = 'none';
+                                    mdSection.parentNode.insertBefore(iframe, mdSection.nextSibling);
+                                } else {
+                                    section.appendChild(iframe);
+                                }
+                            });
+                        });
+                    });
+                    // ページ遷移時にiframeを除去してmdセクションを復元
+                    hook.beforeEach(function () {
+                        var iframe = document.querySelector('.external-iframe');
+                        if (iframe) iframe.remove();
+                        var mdSection = document.querySelector('.markdown-section');
+                        if (mdSection) mdSection.style.display = '';
                     });
                 },
                 // サイドバーリサイズプラグイン
