@@ -199,11 +199,18 @@
                                         });
 
                                         // 3. 元の <img> をスクロール可能なコンテナ + <svg> に置き換える
-                                        // SVG は自然サイズで表示し、はみ出す場合はスクロールバーを表示
+                                        // コンテナより狭い場合は引き伸ばし、広い場合はスクロール
+                                        const naturalWidth = parseInt(svgElement.getAttribute('width')) || null;
                                         svgElement.style.display = 'block';
+                                        svgElement.style.width = '100%';
+                                        svgElement.style.height = 'auto';
+                                        if (naturalWidth) {
+                                            svgElement.style.minWidth = naturalWidth + 'px';
+                                        }
 
                                         const wrapper = document.createElement('div');
                                         wrapper.style.overflow = 'auto';
+                                        wrapper.style.width = '100%';
                                         wrapper.appendChild(svgElement);
 
                                         img.parentNode.replaceChild(wrapper, img);
